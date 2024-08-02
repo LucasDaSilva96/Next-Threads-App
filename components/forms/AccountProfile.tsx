@@ -9,6 +9,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -19,15 +20,16 @@ import * as z from 'zod';
 import Image from 'next/image';
 import { isBase64Image } from '@/lib/utils';
 import { useUploadThing } from '@/lib/uploadThing';
+import { updateUser } from '@/lib/actions/user.actions';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface AccountProfileProps {
   user: {
     id: string;
-    objectId: string;
     username: string;
     name: string;
     bio: string;
-    image: string;
+    image?: string;
   };
   btnTitle: string;
 }
@@ -47,6 +49,9 @@ export default function AccountProfile({
   });
 
   const { startUpload } = useUploadThing('media');
+
+  const router = useRouter();
+  const pathName = usePathname();
 
   const [file, setFile] = React.useState<File[]>([]);
 
@@ -76,7 +81,7 @@ export default function AccountProfile({
   async function onSubmit(values: z.infer<typeof UserValidation>) {
     const blob = values.profile_photo;
 
-    const hasImageChanged = isBase64Image(blob);
+    const hasImageChanged = isBase64Image(blob || '');
 
     if (hasImageChanged) {
       const imgRes = await startUpload(file);
@@ -86,7 +91,20 @@ export default function AccountProfile({
       }
     }
 
-    // TODO Call your API here to update the user profile
+    await updateUser({
+      userId: user.id,
+      username: values.username,
+      name: values.name,
+      image: values.profile_photo,
+      bio: values.bio,
+      path: pathName,
+    });
+
+    if (pathName === '/profile/edit') {
+      router.back();
+    } else {
+      router.push('/');
+    }
   }
 
   return (
@@ -129,6 +147,7 @@ export default function AccountProfile({
                   onChange={(e) => handleImage(e, field.onChange)}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -149,6 +168,7 @@ export default function AccountProfile({
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -170,6 +190,7 @@ export default function AccountProfile({
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -190,6 +211,7 @@ export default function AccountProfile({
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />

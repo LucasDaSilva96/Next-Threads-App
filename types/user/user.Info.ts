@@ -5,4 +5,7 @@ export interface UserInfo {
   name: string;
   bio: string;
   image: string;
+  onboarded: boolean;
+  communities: string[];
+  threads: string[];
 }
