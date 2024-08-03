@@ -17,6 +17,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { ThreadValidation } from '@/lib/validations/thread';
 import { createThread } from '@/lib/actions/thread.action';
 import { useOrganization } from '@clerk/nextjs';
+import { createCommunity } from '@/lib/actions/community.action';
+import { fetchUser } from '@/lib/actions/user.actions';
 
 export default function PostThread({ userId }: { userId: string }) {
   const form = useForm({
@@ -34,12 +36,25 @@ export default function PostThread({ userId }: { userId: string }) {
   const router = useRouter();
 
   const onSubmit = async (data: z.infer<typeof ThreadValidation>) => {
-    console.log(organization);
     try {
+      let org: any = null;
+      const user = await fetchUser(userId);
+
+      if (organization) {
+        org = await createCommunity(
+          organization.id,
+          organization.name,
+          user.username,
+          organization.imageUrl,
+          organization.slug || '',
+          user._id as string
+        );
+      }
+
       await createThread({
         text: data.thread,
         author: userId,
-        communityId: organization ? organization.id : null,
+        communityId: org ? org.id : null,
         path: pathname,
       });
 
