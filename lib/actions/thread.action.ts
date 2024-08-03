@@ -7,6 +7,7 @@ import { connectToDB } from '@/lib/mongoose';
 import User from '@/lib/models/user.model';
 import Thread from '@/lib/models/thread.model';
 import Community from '@/lib/models/community.model';
+import { fetchCommunity } from './community.action';
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   await connectToDB();
@@ -64,15 +65,12 @@ export async function createThread({
   try {
     await connectToDB();
 
-    const communityIdObject = await Community.findOne(
-      { id: communityId },
-      { _id: 1 }
-    );
+    const communityIdObject = await fetchCommunity(communityId!);
 
     const createdThread = await Thread.create({
       text,
       author,
-      community: communityIdObject, // Assign communityId if provided, or leave it null for personal account
+      communityId: communityIdObject._id, // Assign communityId if provided, or leave it null for personal account
     });
 
     // Update User model
@@ -110,7 +108,7 @@ export async function deleteThread(id: string, path: string): Promise<void> {
     await connectToDB();
 
     // Find the thread to be deleted (the main thread)
-    const mainThread = await Thread.findById(id).populate('author community');
+    const mainThread = await Thread.findById(id).populate('author communityId');
 
     if (!mainThread) {
       throw new Error('Thread not found');
@@ -172,7 +170,7 @@ export async function fetchThreadById(threadId: string) {
         select: '_id id name image',
       }) // Populate the author field with _id and username
       .populate({
-        path: 'community',
+        path: 'communityId',
         model: Community,
         select: '_id id name image',
       }) // Populate the community field with _id and name
