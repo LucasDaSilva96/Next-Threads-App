@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { usePathname, useRouter } from 'next/navigation';
 import { CommentValidation } from '@/lib/validations/thread';
-import { createThread } from '@/lib/actions/thread.action';
+import { addCommentToThread, createThread } from '@/lib/actions/thread.action';
 import { Input } from '../ui/input';
 import Image from 'next/image';
 
@@ -42,6 +42,9 @@ export default function CommentForm({
 
   const onSubmit = async (data: z.infer<typeof CommentValidation>) => {
     try {
+      await addCommentToThread(threadId, data.thread, currentUserId, pathname);
+
+      form.reset();
     } catch (error) {
       console.log(error);
     }
@@ -55,17 +58,20 @@ export default function CommentForm({
           name='thread'
           render={({ field }) => (
             <FormItem className='flex items-center gap-2 w-full'>
-              <FormLabel>
+              <FormLabel className='w-12 h-12 relative'>
                 <Image
                   src={currentUserImg}
                   alt='Current user'
-                  width={48}
-                  height={48}
+                  fill
                   className='rounded-full object-cover'
                 />
               </FormLabel>
               <FormControl className='border-none bg-transparent'>
-                <Input {...field} placeholder='Comment...' />
+                <Input
+                  {...field}
+                  placeholder='Comment...'
+                  className='text-slate-50'
+                />
               </FormControl>
             </FormItem>
           )}

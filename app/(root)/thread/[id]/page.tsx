@@ -46,9 +46,26 @@ export default async function Thread_Detail_Page({
       <div className='mt-7'>
         <CommentForm
           threadId={thread.id}
-          currentUserImg={user.imageUrl}
+          currentUserImg={userInfo.image}
           currentUserId={userInfo._id.toString()}
         />
+      </div>
+
+      <div className='mt-10'>
+        {thread?.children?.map((comment: any) => (
+          <ThreadCard
+            key={comment._id.toString()}
+            id={comment._id}
+            currentUserId={user?.id || ''}
+            parentId={comment.parentId}
+            content={comment.text}
+            author={comment.author}
+            community={comment.communityId}
+            createdAt={comment.createdAt}
+            comments={comment.children}
+            isComment={true}
+          />
+        ))}
       </div>
     </section>
   );

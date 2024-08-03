@@ -35,6 +35,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  bio: String,
 });
 
 // Create a model if it does not exist, otherwise use the existing one
