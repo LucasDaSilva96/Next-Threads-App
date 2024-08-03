@@ -10,14 +10,10 @@ import { headers } from 'next/headers';
 import { IncomingHttpHeaders } from 'http';
 
 import { NextResponse } from 'next/server';
-
 import {
   addMemberToCommunity,
   createCommunity,
   deleteCommunity,
-  fetchCommunities,
-  fetchCommunityDetails,
-  fetchCommunityPosts,
   removeUserFromCommunity,
   updateCommunityInfo,
 } from '@/lib/actions/community.action';

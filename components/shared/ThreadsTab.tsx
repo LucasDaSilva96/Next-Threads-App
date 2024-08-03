@@ -20,9 +20,9 @@ export default async function ThreadsTab({
 
   return (
     <section className='mt-9 flex flex-col gap-10'>
-      {results.threads.map((thread: any) => (
+      {results.threads.map((thread: any, i: number) => (
         <ThreadCard
-          key={thread._id.toString()}
+          key={i.toString()}
           id={thread._id}
           currentUserId={currentUserId!}
           parentId={thread.parentId}

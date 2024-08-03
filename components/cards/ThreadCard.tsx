@@ -1,9 +1,9 @@
+import { formatDateString } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
 interface ThreadCardProps {
-  key: string;
   id: string;
   currentUserId: string;
   parentId: string | null;
@@ -28,7 +28,6 @@ interface ThreadCardProps {
 }
 
 export default function ThreadCard({
-  key,
   id,
   currentUserId,
   parentId,
@@ -114,6 +113,27 @@ export default function ThreadCard({
             </div>
           </div>
         </div>
+        {/* TODO: Delete thread */}
+        {/* TODO: Show comment logos */}
+
+        {!isComment && community && (
+          <Link
+            href={`/community/${community.id}`}
+            className='mt-5 flex items-center'
+          >
+            <p className='text-subtle-medium text-gray-1'>
+              {formatDateString(createdAt as string)} - {community.name}{' '}
+              Community
+            </p>
+            <Image
+              src={community.image}
+              alt={community.name}
+              width={14}
+              height={14}
+              className='ml-1 rounded-full object-cover'
+            />
+          </Link>
+        )}
       </div>
     </article>
   );

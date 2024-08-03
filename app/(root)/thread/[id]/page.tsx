@@ -52,9 +52,9 @@ export default async function Thread_Detail_Page({
       </div>
 
       <div className='mt-10'>
-        {thread?.children?.map((comment: any) => (
+        {thread?.children?.map((comment: any, i: number) => (
           <ThreadCard
-            key={comment._id.toString()}
+            key={i.toString()}
             id={comment._id}
             currentUserId={user?.id || ''}
             parentId={comment.parentId}

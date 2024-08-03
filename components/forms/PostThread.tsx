@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { usePathname, useRouter } from 'next/navigation';
 import { ThreadValidation } from '@/lib/validations/thread';
 import { createThread } from '@/lib/actions/thread.action';
+import { useOrganization } from '@clerk/nextjs';
 
 export default function PostThread({ userId }: { userId: string }) {
   const form = useForm({
@@ -28,14 +29,17 @@ export default function PostThread({ userId }: { userId: string }) {
 
   const pathname = usePathname();
 
+  const { organization } = useOrganization();
+
   const router = useRouter();
 
   const onSubmit = async (data: z.infer<typeof ThreadValidation>) => {
+    console.log(organization);
     try {
       await createThread({
         text: data.thread,
         author: userId,
-        communityId: null,
+        communityId: organization ? organization.id : null,
         path: pathname,
       });
 

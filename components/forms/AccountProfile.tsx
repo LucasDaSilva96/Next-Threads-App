@@ -95,7 +95,7 @@ export default function AccountProfile({
       userId: user.id,
       username: values.username,
       name: values.name,
-      image: values.profile_photo,
+      image: values.profile_photo!,
       bio: values.bio,
       path: pathName,
     });
