@@ -17,7 +17,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { ThreadValidation } from '@/lib/validations/thread';
 import { createThread } from '@/lib/actions/thread.action';
 import { useOrganization } from '@clerk/nextjs';
-import { createCommunity } from '@/lib/actions/community.action';
+import {
+  createCommunity,
+  fetchCommunity,
+} from '@/lib/actions/community.action';
 import { fetchUser } from '@/lib/actions/user.actions';
 
 export default function PostThread({ userId }: { userId: string }) {
@@ -38,23 +41,27 @@ export default function PostThread({ userId }: { userId: string }) {
   const onSubmit = async (data: z.infer<typeof ThreadValidation>) => {
     try {
       let org: any = null;
+      let ORG_IN_DB: any = null;
       const user = await fetchUser(userId);
 
       if (organization) {
-        org = await createCommunity(
-          organization.id,
-          organization.name,
-          user.username,
-          organization.imageUrl,
-          organization.slug || '',
-          user._id as string
-        );
+        ORG_IN_DB = await fetchCommunity(organization.id as string);
+        if (!ORG_IN_DB) {
+          org = await createCommunity(
+            organization.id,
+            organization.name,
+            user.username,
+            organization.imageUrl,
+            organization.slug || '',
+            user._id as string
+          );
+        }
       }
 
       await createThread({
         text: data.thread,
-        author: userId,
-        communityId: org ? org.id : null,
+        author: user._id as string,
+        communityId: org?._id || ORG_IN_DB?._id || null,
         path: pathname,
       });
 
