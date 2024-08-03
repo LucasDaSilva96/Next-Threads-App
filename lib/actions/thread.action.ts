@@ -143,6 +143,7 @@ export async function addCommentToThread(
     originalThread.children.push(savedCommentThread._id);
 
     await originalThread.save();
+    revalidatePath(path);
   } catch (error: any) {
     console.log(error);
     throw new Error('❌', error.message);
