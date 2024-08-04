@@ -37,7 +37,7 @@ export default async function Thread_Detail_Page({
           parentId={thread.parentId}
           content={thread.text}
           author={thread.author}
-          community={thread.communityId}
+          community={thread.community}
           createdAt={thread.createdAt}
           comments={thread.children}
         />
@@ -60,7 +60,7 @@ export default async function Thread_Detail_Page({
             parentId={comment.parentId}
             content={comment.text}
             author={comment.author}
-            community={comment.communityId}
+            community={comment.community}
             createdAt={comment.createdAt}
             comments={comment.children}
             isComment={true}

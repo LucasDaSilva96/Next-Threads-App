@@ -8,6 +8,7 @@ interface ProfileHeaderProps {
   username: string;
   image: string;
   bio: string;
+  type?: 'User' | 'Community';
 }
 
 export default function ProfileHeader({
@@ -17,6 +18,7 @@ export default function ProfileHeader({
   image,
   name,
   username,
+  type,
 }: ProfileHeaderProps) {
   return (
     <div className='flex flex-col w-full justify-start'>

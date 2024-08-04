@@ -2,15 +2,14 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { connectToDB } from '@/lib/mongoose';
+import { connectToDB } from '../mongoose';
 
 import User from '@/lib/models/user.model';
 import Thread from '@/lib/models/thread.model';
 import Community from '@/lib/models/community.model';
-import { fetchCommunity } from './community.action';
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
-  await connectToDB();
+  connectToDB();
 
   // Calculate the number of posts to skip based on the page number and page size.
   const skipAmount = (pageNumber - 1) * pageSize;
@@ -63,14 +62,20 @@ export async function createThread({
   path,
 }: Params) {
   try {
-    await connectToDB();
+    connectToDB();
 
-    const communityIdObject = await fetchCommunity(communityId!);
+    const communityIdObject = await Community.findOne(
+      { id: communityId },
+      { _id: 1 }
+    );
+
+    const community = await Community.findById(communityIdObject);
 
     const createdThread = await Thread.create({
       text,
       author,
-      communityId: communityIdObject._id, // Assign communityId if provided, or leave it null for personal account
+      communityId: communityIdObject, // Assign communityId if provided, or leave it null for personal account
+      community: communityIdObject ? community : [],
     });
 
     // Update User model
@@ -105,10 +110,10 @@ async function fetchAllChildThreads(threadId: string): Promise<any[]> {
 
 export async function deleteThread(id: string, path: string): Promise<void> {
   try {
-    await connectToDB();
+    connectToDB();
 
     // Find the thread to be deleted (the main thread)
-    const mainThread = await Thread.findById(id).populate('author communityId');
+    const mainThread = await Thread.findById(id).populate('author community');
 
     if (!mainThread) {
       throw new Error('Thread not found');
@@ -160,7 +165,7 @@ export async function deleteThread(id: string, path: string): Promise<void> {
 }
 
 export async function fetchThreadById(threadId: string) {
-  await connectToDB();
+  connectToDB();
 
   try {
     const thread = await Thread.findById(threadId)
@@ -170,7 +175,7 @@ export async function fetchThreadById(threadId: string) {
         select: '_id id name image',
       }) // Populate the author field with _id and username
       .populate({
-        path: 'communityId',
+        path: 'community',
         model: Community,
         select: '_id id name image',
       }) // Populate the community field with _id and name
@@ -208,7 +213,7 @@ export async function addCommentToThread(
   userId: string,
   path: string
 ) {
-  await connectToDB();
+  connectToDB();
 
   try {
     // Find the original thread by its ID

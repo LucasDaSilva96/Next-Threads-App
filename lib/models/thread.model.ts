@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { communitySchema } from './community.model';
 
 const threadSchema = new mongoose.Schema({
   text: {
@@ -13,7 +14,9 @@ const threadSchema = new mongoose.Schema({
   communityId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Community',
+    default: null,
   },
+  community: [communitySchema],
   createdAt: {
     type: Date,
     default: Date.now,
@@ -29,7 +32,6 @@ const threadSchema = new mongoose.Schema({
   ],
 });
 
-// Create a model if it does not exist, otherwise use the existing one
 const Thread = mongoose.models.Thread || mongoose.model('Thread', threadSchema);
 
 export default Thread;

@@ -1,3 +1,4 @@
+import { fetchCommunity } from '@/lib/actions/community.action';
 import { formatDateString } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -27,7 +28,7 @@ interface ThreadCardProps {
   isComment?: boolean;
 }
 
-export default function ThreadCard({
+export default async function ThreadCard({
   id,
   currentUserId,
   parentId,
@@ -118,15 +119,15 @@ export default function ThreadCard({
       </div>
       {!isComment && community && (
         <Link
-          href={`/community/${community.id}`}
+          href={`/communities/${community.id}`}
           className='mt-5 flex items-center'
         >
           <p className='text-subtle-medium text-gray-1'>
             {formatDateString(createdAt as string)} - {community.name} Community
           </p>
           <Image
-            src={community.image}
-            alt={community.name}
+            src={community.image || '/assets/community.svg'}
+            alt={community.name || 'Community image'}
             width={14}
             height={14}
             className='ml-1 rounded-full object-cover'

@@ -21,6 +21,7 @@ export default function UserCard({
   username,
 }: UserCardProps) {
   const router = useRouter();
+
   return (
     <article className='user-card'>
       <div className='user-card_avatar'>
